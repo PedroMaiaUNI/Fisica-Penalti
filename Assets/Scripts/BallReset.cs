@@ -3,11 +3,14 @@ using UnityEngine;
 public class BallReset : MonoBehaviour
 {
     Vector3 startPos;
+    Quaternion startRot;
     Rigidbody rb;
 
     void Start()
     {
         startPos = transform.position;
+        startRot = transform.rotation;
+        
         rb = GetComponent<Rigidbody>();
     }
 
@@ -25,6 +28,6 @@ public class BallReset : MonoBehaviour
         rb.angularVelocity = Vector3.zero;
 
         transform.position = startPos;
-        transform.rotation = Quaternion.identity;
+        transform.rotation = startRot;
     }
 }
