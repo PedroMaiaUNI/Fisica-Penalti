@@ -266,6 +266,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -6057140222963153312, guid: fc656d7937ad4b84bb578540424ba2d6, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: d9c35a2e90318e0a8a410dd6092b3ba1, type: 2}
+    - target: {fileID: -6057140222963153312, guid: fc656d7937ad4b84bb578540424ba2d6, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: fc656d7937ad4b84bb578540424ba2d6, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.50699794
@@ -280,7 +288,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: fc656d7937ad4b84bb578540424ba2d6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 32.646
+      value: 32.481
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: fc656d7937ad4b84bb578540424ba2d6, type: 3}
       propertyPath: m_LocalPosition.y
@@ -320,7 +328,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -927199367670048503, guid: fc656d7937ad4b84bb578540424ba2d6, type: 3}
       propertyPath: m_Name
-      value: Character
+      value: Goalkeeper
       objectReference: {fileID: 0}
     - target: {fileID: 1513352704009848583, guid: fc656d7937ad4b84bb578540424ba2d6, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -329,7 +337,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: -927199367670048503, guid: fc656d7937ad4b84bb578540424ba2d6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1974126560}
   m_SourcePrefab: {fileID: 100100000, guid: fc656d7937ad4b84bb578540424ba2d6, type: 3}
 --- !u!1 &244324831
 GameObject:
@@ -3000,6 +3011,28 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: f20d7cec790c5c86c835aa354d3076f4, type: 3}
   m_PrefabInstance: {fileID: 1757226172}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1974126557 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -927199367670048503, guid: fc656d7937ad4b84bb578540424ba2d6, type: 3}
+  m_PrefabInstance: {fileID: 224372861}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1974126560
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1974126557}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48077fd5c5ad04f1b85e23ebc3fd1826, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GoalkeeperController
+  lowDiveDistance: 1.5
+  lowDiveHeight: 0
+  highDiveDistance: 1.5
+  highDiveHeight: 0
+  diveDuration: 2
 --- !u!1001 &1990610693
 PrefabInstance:
   m_ObjectHideFlags: 0
