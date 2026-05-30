@@ -13,7 +13,7 @@ public class BallReset : MonoBehaviour
         
         rb = GetComponent<Rigidbody>();
     }
-
+    /*
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.R))
@@ -21,7 +21,7 @@ public class BallReset : MonoBehaviour
             ResetBall();
         }
     }
-
+    */
     void ResetBall()
     {
         rb.linearVelocity = Vector3.zero;

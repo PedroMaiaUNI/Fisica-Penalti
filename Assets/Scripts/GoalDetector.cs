@@ -6,7 +6,7 @@ public class GoalDetector : MonoBehaviour
     {
         if (other.CompareTag("Ball"))
         {
-            Debug.Log("GOOOL!");
+            PenaltySessionController.Instance.RegisterGoal();
         }
     }
 }
