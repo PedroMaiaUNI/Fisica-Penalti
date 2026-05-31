@@ -14,15 +14,20 @@ public class MenuButtons : MonoBehaviour
 
     public void Quit()
     {
-        Application.Quit();
-
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
 #endif
     }
 
     public void NextLevel()
     {
-        Debug.Log("Próximo nível ainda não implementado.");
+        Time.timeScale = 1f;
+
+        int currentScene =
+            SceneManager.GetActiveScene().buildIndex;
+
+        SceneManager.LoadScene(currentScene + 1);
     }
 }

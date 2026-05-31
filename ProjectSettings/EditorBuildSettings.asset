@@ -6,7 +6,22 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/cobrancaPenalti.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    path: Assets/Telas/filme.unity
+    guid: 2a83b9d775f692dab87fe5735a7428d9
+  - enabled: 1
+    path: Assets/Telas/menuprincipal.unity
+    guid: ae3c6da925f90076f8b04f49917fd57e
+  - enabled: 1
+    path: Assets/Telas/level1.unity
+    guid: 3c2dfc3329e50233e858d63cb0198343
+  - enabled: 1
+    path: Assets/Telas/level2.unity
+    guid: fa30261728acd9e8ebb22d4293a00c3b
+  - enabled: 1
+    path: Assets/Telas/level3.unity
+    guid: 405a2b1982ba2eeb9a8f67fee75d5f57
+  - enabled: 1
+    path: Assets/Telas/level4.unity
+    guid: 80b6993005b977d44871a77e74772cc3
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
