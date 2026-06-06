@@ -1,10 +1,13 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 public class PenaltySessionController : MonoBehaviour
 {
     public static PenaltySessionController Instance;
+
+    public GoalkeeperController goalkeeper;
 
     [Header("Penalty Indicators")]
     public Image[] attempts;
@@ -16,8 +19,10 @@ public class PenaltySessionController : MonoBehaviour
     public GameObject victoryPanel;
     public GameObject defeatPanel;
 
-    private int currentAttempt = 0;
+    [Header("Tela de Pausa")]
+    public GameObject pausa;
 
+    private int currentAttempt = 0;
     private bool gameFinished = false;
     private bool shotResolved = false;
 
@@ -38,11 +43,43 @@ public class PenaltySessionController : MonoBehaviour
 
         if (defeatPanel != null)
             defeatPanel.SetActive(false);
+
+        if (pausa != null)
+            pausa.SetActive(false);
+    }
+
+    private void Update()
+    {
+        if (gameFinished)
+            return;
+
+        if (Keyboard.current != null &&
+            Keyboard.current.escapeKey.wasPressedThisFrame)
+        {
+            AlternarPausa();
+        }
+    }
+
+    public void AlternarPausa()
+    {
+        if (pausa == null)
+            return;
+
+        bool pausado = !pausa.activeSelf;
+
+        pausa.SetActive(pausado);
+        pausa.transform.SetAsLastSibling();
+
+        Time.timeScale = pausado ? 0f : 1f;
     }
 
     public bool IsGameFinished()
     {
         return gameFinished;
+    }
+
+    public bool IsPaused(){
+        return pausa != null && pausa.activeSelf;
     }
 
     public bool ShotResolved()
@@ -57,15 +94,10 @@ public class PenaltySessionController : MonoBehaviour
 
     public void RegisterGoal()
     {
-        if (gameFinished)
-            return;
-
-        if (shotResolved)
+        if (gameFinished || shotResolved)
             return;
 
         shotResolved = true;
-
-        Debug.Log("Gol registrado");
 
         if (currentAttempt < attempts.Length)
         {
@@ -85,15 +117,10 @@ public class PenaltySessionController : MonoBehaviour
 
     public void RegisterMiss()
     {
-        if (gameFinished)
-            return;
-
-        if (shotResolved)
+        if (gameFinished || shotResolved)
             return;
 
         shotResolved = true;
-
-        Debug.Log("Cobrança perdida");
 
         if (currentAttempt < attempts.Length)
         {
@@ -106,6 +133,11 @@ public class PenaltySessionController : MonoBehaviour
     private IEnumerator PrepareNextShot()
     {
         yield return new WaitForSeconds(1.5f);
+
+        if(goalkeeper != null)
+        {
+            goalkeeper.ResetGoalkeeper();
+        }
 
         if (ballShooter != null)
         {
@@ -128,7 +160,6 @@ public class PenaltySessionController : MonoBehaviour
     private void Victory()
     {
         gameFinished = true;
-
         StartCoroutine(ShowVictory());
     }
 

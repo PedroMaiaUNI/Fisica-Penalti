@@ -7,6 +7,7 @@ public class GoalDetector : MonoBehaviour
         if (other.CompareTag("Ball"))
         {
             PenaltySessionController.Instance.RegisterGoal();
+            AudioManager.Instance.PlayGoal();
         }
     }
 }

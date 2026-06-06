@@ -1,25 +1,40 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 public class BallShooter : MonoBehaviour
 {
+    [Header("References")]
     public Rigidbody rb;
-
-    private float stoppedTime = 0f;
-    private float shotTimer = 0f;
-    private float missCheckDelay = 0.5f;
-
-    public Image powerFill;
-    public Image directionFill;
-    public Image heightFill;
-
-    private Coroutine shotCoroutine;
+    public GoalkeeperController goalkeeper;
 
     [Header("UI")]
     public Slider powerSlider;
     public Slider directionSlider;
     public Slider heightSlider;
+
+    public Image powerFill;
+    public Image directionFill;
+    public Image heightFill;
+
+    [Header("Slider Speeds")]
+    public float powerSliderSpeed = 1.5f;
+    public float directionSliderSpeed = 1.5f;
+    public float heightSliderSpeed = 1.5f;
+
+    [Header("Power Settings")]
+    public float minPower = 5f;
+    public float maxPower = 30f;
+
+    [Header("Direction Settings")]
+    public float minHorizontal = -1f;
+    public float maxHorizontal = 1f;
+
+    [Header("Height Settings")]
+    public float minVertical = 0.2f;
+    public float maxVertical = 1.2f;
+
+    [Header("Rules")]
+    public float shotTimeoutSeconds = 5f;
 
     enum ShootState
     {
@@ -29,25 +44,21 @@ public class BallShooter : MonoBehaviour
         Done
     }
 
-    ShootState currentState;
+    private ShootState currentState;
 
-    float powerValue;
-    float directionValue;
-    float heightValue;
+    private float powerValue;
+    private float directionValue;
+    private float heightValue;
 
-    bool increasing = true;
+    private bool increasing = true;
+    private bool kicked = false;
 
-    float sliderSpeed = 1.5f;
+    private Vector3 startPos;
+    private Quaternion startRot;
 
-    bool kicked = false;
+    private Coroutine shotCoroutine;
 
-    Vector3 startPos;
-    Quaternion startRot;
-
-    private bool missChecked = false;
-    private bool wasShot = false;
-
-    void Start()
+    private void Start()
     {
         rb = GetComponent<Rigidbody>();
 
@@ -57,13 +68,15 @@ public class BallShooter : MonoBehaviour
         ResetShotSystem();
     }
 
-    void Update()
+    private void Update()
     {
-        // Impede interação após vitória ou derrota
-        if (PenaltySessionController.Instance != null &&
-            PenaltySessionController.Instance.IsGameFinished())
+        if (PenaltySessionController.Instance != null)
         {
-            return;
+            if (PenaltySessionController.Instance.IsGameFinished())
+                return;
+
+            if (PenaltySessionController.Instance.IsPaused())
+                return;
         }
 
         UpdateBarColors();
@@ -77,58 +90,28 @@ public class BallShooter : MonoBehaviour
                 ConfirmCurrentValue();
             }
         }
-
-        // Reset manual APENAS após a cobrança ter sido resolvida
-        /*
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            if (PenaltySessionController.Instance != null &&
-                PenaltySessionController.Instance.ShotResolved())
-            {
-                ResetBall();
-            }
-        }
-        */
-
-        // Detecta erro quando a bola para
-        if (wasShot && !missChecked)
-        {
-            if (rb.linearVelocity.magnitude < 0.1f)
-            {
-                stoppedTime += Time.deltaTime;
-
-                if (stoppedTime >= 1f)
-                {
-                    if (!PenaltySessionController.Instance.ShotResolved())
-                    {
-                        missChecked = true;
-                        PenaltySessionController.Instance.RegisterMiss();
-                    }
-                }
-            }
-            else
-            {
-                stoppedTime = 0f;
-            }
-        }
     }
 
-    void HandleCurrentSlider()
+    private void HandleCurrentSlider()
     {
         Slider activeSlider = null;
+        float currentSpeed = 1f;
 
         switch (currentState)
         {
             case ShootState.Power:
                 activeSlider = powerSlider;
+                currentSpeed = powerSliderSpeed;
                 break;
 
             case ShootState.Direction:
                 activeSlider = directionSlider;
+                currentSpeed = directionSliderSpeed;
                 break;
 
             case ShootState.Height:
                 activeSlider = heightSlider;
+                currentSpeed = heightSliderSpeed;
                 break;
         }
 
@@ -138,9 +121,9 @@ public class BallShooter : MonoBehaviour
         float value = activeSlider.value;
 
         if (increasing)
-            value += sliderSpeed * Time.deltaTime;
+            value += currentSpeed * Time.deltaTime;
         else
-            value -= sliderSpeed * Time.deltaTime;
+            value -= currentSpeed * Time.deltaTime;
 
         if (value >= 1f)
         {
@@ -157,7 +140,7 @@ public class BallShooter : MonoBehaviour
         activeSlider.value = value;
     }
 
-    void ConfirmCurrentValue()
+    private void ConfirmCurrentValue()
     {
         switch (currentState)
         {
@@ -183,11 +166,15 @@ public class BallShooter : MonoBehaviour
     {
         kicked = true;
 
-        wasShot = true;
-        missChecked = false;
-        shotTimer = 0f;
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayKick();
+        }
 
-        PenaltySessionController.Instance.BeginShot();
+        if (PenaltySessionController.Instance != null)
+        {
+            PenaltySessionController.Instance.BeginShot();
+        }
 
         if (shotCoroutine != null)
         {
@@ -196,11 +183,34 @@ public class BallShooter : MonoBehaviour
 
         shotCoroutine = StartCoroutine(ShotTimeout());
 
-        float power = Mathf.Lerp(5f, 30f, powerValue);
+        if (goalkeeper != null)
+        {
+            goalkeeper.DecideAction(
+                directionValue,
+                heightValue
+            );
+        }
 
-        float horizontal = Mathf.Lerp(-1f, 1f, directionValue);
+        float power =
+            Mathf.Lerp(
+                minPower,
+                maxPower,
+                powerValue
+            );
 
-        float vertical = Mathf.Lerp(0.2f, 1.2f, heightValue);
+        float horizontal =
+            Mathf.Lerp(
+                minHorizontal,
+                maxHorizontal,
+                directionValue
+            );
+
+        float vertical =
+            Mathf.Lerp(
+                minVertical,
+                maxVertical,
+                heightValue
+            );
 
         Vector3 shootDirection =
             transform.forward +
@@ -209,7 +219,10 @@ public class BallShooter : MonoBehaviour
 
         shootDirection.Normalize();
 
-        rb.AddForce(shootDirection * power, ForceMode.Impulse);
+        rb.AddForce(
+            shootDirection * power,
+            ForceMode.Impulse
+        );
     }
 
     public void ResetBall()
@@ -225,27 +238,24 @@ public class BallShooter : MonoBehaviour
         ResetShotSystem();
     }
 
-    void ResetShotSystem()
+    private void ResetShotSystem()
     {
         kicked = false;
-
-        wasShot = false;
-        missChecked = false;
 
         increasing = true;
 
         currentState = ShootState.Power;
 
-        powerValue = 0;
+        powerValue = 0f;
         directionValue = 0.5f;
-        heightValue = 0;
+        heightValue = 0f;
 
-        powerSlider.value = 0;
+        powerSlider.value = 0f;
         directionSlider.value = 0.5f;
-        heightSlider.value = 0;
+        heightSlider.value = 0f;
     }
 
-    void UpdateBarColors()
+    private void UpdateBarColors()
     {
         Color activeColor = Color.yellow;
         Color inactiveColor = Color.white;
@@ -268,9 +278,14 @@ public class BallShooter : MonoBehaviour
 
     private System.Collections.IEnumerator ShotTimeout()
     {
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(
+            shotTimeoutSeconds
+        );
 
-        if (!PenaltySessionController.Instance.ShotResolved())
+        if (
+            PenaltySessionController.Instance != null &&
+            !PenaltySessionController.Instance.ShotResolved()
+        )
         {
             PenaltySessionController.Instance.RegisterMiss();
         }

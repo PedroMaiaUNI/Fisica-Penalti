@@ -21,6 +21,9 @@ public class GerenciadorUI : MonoBehaviour
     public Color corDoTexto = Color.white;
     public int spacingEntreElementos = 20;
 
+    [Header("Tela a ser carregada")]
+    public string loadScene;
+
     private readonly Vector2 refResolution = new Vector2(1920, 1080);
     private GameObject painelMenuReferencia; 
 
@@ -45,8 +48,8 @@ public class GerenciadorUI : MonoBehaviour
 
     void FinalizarVideo(VideoPlayer vp)
     {
-        if (imagemDoVideo != null) imagemDoVideo.gameObject.SetActive(false);
-        if (painelMenuReferencia != null) painelMenuReferencia.SetActive(true);
+        //if (imagemDoVideo != null) imagemDoVideo.gameObject.SetActive(false);
+        SceneManager.LoadScene(loadScene);
     }
 
     void Update()
