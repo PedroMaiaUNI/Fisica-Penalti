@@ -149,6 +149,11 @@ public class PenaltySessionController : MonoBehaviour
     {
         gameFinished = true;
 
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySave();
+        }
+
         if (defeatPanel != null)
         {
             defeatPanel.SetActive(true);
