@@ -23,5 +23,11 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Telas/level4.unity
     guid: 80b6993005b977d44871a77e74772cc3
+  - enabled: 1
+    path: Assets/Telas/vitoria.unity
+    guid: 0c9c4ca97a3fbd929a8b94ba00401b0e
+  - enabled: 1
+    path: Assets/Telas/derrota.unity
+    guid: 4342d04c9d8567d588ad73a26cc76911
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
